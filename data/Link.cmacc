@@ -1,0 +1,3 @@
+$ helloworld = [./Index.cmacc]
+
+{{helloworld}}
