@@ -13,7 +13,7 @@ describe('result', function () {
     base: __dirname
   };
 
-  describe('variable', function () {
+  describe('variable exist', function () {
 
     const ref = 'file://' + path.join(__dirname, '../data', 'Index.cmacc');
 
@@ -28,7 +28,27 @@ describe('result', function () {
 
     it('result', () => {
       return editor.getResult().then((value) => {
-        assert.equal(value, '$ world = Test\n\n# hello {{world}}')
+        assert.equal(value, '$ world = \'Test\'\n\n# hello {{world}}')
+      });
+    });
+  });
+
+  describe('variable new', function () {
+
+    const ref = 'file://' + path.join(__dirname, '../data', 'Index.cmacc');
+
+    const editor = new CmaccEditor(ref);
+
+    it('mutation', () => {
+      editor.addMutation('world2', 'Test')
+      return editor.getValue('world2').then((value) => {
+        assert.equal(value, 'Test')
+      });
+    });
+
+    it('result', () => {
+      return editor.getResult().then((value) => {
+        assert.equal(value, '$ world2 = \'Test\'\n\n$ world = \'World\'\n\n# hello {{world}}')
       });
     });
   });

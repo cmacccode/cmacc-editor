@@ -58,8 +58,11 @@ class editor {
       let data = ast['$data'];
       return this.mutations.reduce((acc, mutation) => {
         const regex = new RegExp(`\\$ ${mutation.path} = .*`)
-        console.log(regex)
-        return acc.replace(regex, `$ ${mutation.path} = ${mutation.value}`)
+        if(acc.match(regex)){
+          return acc.replace(regex, `$ ${mutation.path} = '${mutation.value}'`)
+        }else{
+          return `$ ${mutation.path} = '${mutation.value}'\n\n` + acc
+        }
       },data);
     });
   }
