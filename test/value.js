@@ -32,7 +32,6 @@ describe('value', function () {
 
     const editor = new CmaccEditor(ref);
 
-
     it('add mutation', () => {
       editor.addMutation('world', 'Test')
       return editor.ast.then((ast) => {
