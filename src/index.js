@@ -38,7 +38,7 @@ class editor {
   addMutation(path, value) {
     return this.ast.then(ast => {
       const res = path.split('.').reduce((a, b) => a[b], ast);
-      const file = res ? res['$file'] : null;
+      const file = res ? res['$file'] : ast['$file'];
       const type = (!res || typeof res === 'string') ? 'variable' : 'file';
       this.mutations.push({path, value, file, type});
       return this.mutations;
@@ -49,18 +49,14 @@ class editor {
     this.mutations = this.mutations.filter((x) => {
       return x.path !== path
     });
+    return Promise.resolve()
   }
 
 
   getResult() {
     return this.getValue().then((ast) => {
 
-      const res = [
-        {
-          file: ast['$file'],
-          content: ast['$data']
-        }
-      ];
+      const res = [];
 
       return this.mutations.reduce((acc, mutation) => {
         const file = mutation['file'] || ast['$file'];
@@ -70,7 +66,7 @@ class editor {
         if (!obj) {
           obj = {
             file: file,
-            content: mutation.path.split('.').reduce((a, b) => a[b], ast)
+            content: mutation.path.split('.').reduce((a, b) => a[b], ast)['$data']
           };
           acc.push(obj);
         }
@@ -100,8 +96,13 @@ class editor {
     });
 
     if (mutations.length > 0) {
-      const res = mutations[mutations.length - 1]
-      return Promise.resolve(res.value)
+      const split = mutations[mutations.length - 1].value.split(/\r?\n/);
+      const index = split.findIndex(x => x.match(/^[^\$\s\/]/));
+      const res = {
+        header: split.slice(0, index),
+        content: split.slice(index)
+      };
+      return Promise.resolve(res)
     }
 
     return cmacc.compile(this.ref, this.opts).then((ast) => {
@@ -109,11 +110,19 @@ class editor {
       const res = split.reduce((a, b) => a[b], ast);
 
       if (typeof res === 'object') {
-        return res['$data']
+        const split = res['$data'].split(/\r?\n/)
+        const index = split.findIndex(x => x.match(/^[^\$\s\/]/))
+        return {
+          header: split.slice(0, index),
+          content: split.slice(index)
+        }
       }
 
       if (typeof res === 'string') {
-        return res
+        return {
+          header: [],
+          content: [res]
+        }
       }
 
     })

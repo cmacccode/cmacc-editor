@@ -43,7 +43,7 @@ describe('mutations', function () {
     it('remove mutation', () => {
       editor.resetMutation('helloworld')
       return editor.ast.then((ast) => {
-        assert.deepEqual(editor.mutations,[])
+        assert.deepEqual(editor.mutations, [])
         assert.equal(ast.helloworld.world, 'World')
         return Cmacc.render(ast);
       }).then(md => {
@@ -70,14 +70,19 @@ describe('mutations', function () {
 
     it('add mutation', () => {
       editor.addMutation('world', 'Test')
-      return editor.ast.then((ast) => {
-        assert.equal(ast.world, 'Test')
-      });
+        .then(() => {
+          return editor.ast
+        })
+        .then((ast) => {
+          assert.equal(ast.world, 'Test')
+        });
     });
 
     it('remove mutation', () => {
       editor.resetMutation('world')
-      return editor.ast.then((ast) => {
+        .then(() => {
+          return editor.ast
+        }).then((ast) => {
         assert.equal(ast.world, 'World')
       });
     });
