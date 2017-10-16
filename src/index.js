@@ -19,7 +19,7 @@ class editor {
         } else {
           const opts = {
             loaders: this.opts.loaders,
-            base : sub[last]['$file'],
+            base: sub[last]['$file'],
           }
           return cmacc.compile(mutation.value, opts)
             .then((value) => {
@@ -36,7 +36,13 @@ class editor {
   }
 
   addMutation(path, value) {
-    this.mutations.push({path, value});
+    return this.ast.then(ast => {
+      const res = path.split('.').reduce((a, b) => a[b], ast);
+      const file = res ? res['$file'] : null;
+      const type = (!res || typeof res === 'string') ? 'variable' : 'file';
+      this.mutations.push({path, value, file, type});
+      return this.mutations;
+    });
   }
 
   resetMutation(path) {
@@ -45,31 +51,48 @@ class editor {
     });
   }
 
-  getNode(path) {
-    return cmacc.compile(this.ref, this.opts).then((ast) => {
-      const split = path.split('.');
-      const res = split.reduce((a, b) => a[b], ast);
-      return res;
-    });
-  }
 
   getResult() {
     return this.getValue().then((ast) => {
-      let data = ast['$data'];
-      return this.mutations.reduce((acc, mutation) => {
-        const regex = new RegExp(`\\$ ${mutation.path} = .*`)
-        if(acc.match(regex)){
-          return acc.replace(regex, `$ ${mutation.path} = '${mutation.value}'`)
-        }else{
-          return `$ ${mutation.path} = '${mutation.value}'\n\n` + acc
+
+      const res = [
+        {
+          file: ast['$file'],
+          content: ast['$data']
         }
-      },data);
+      ];
+
+      return this.mutations.reduce((acc, mutation) => {
+        const file = mutation['file'] || ast['$file'];
+
+        let obj = acc.find(x => x.file === file)
+
+        if (!obj) {
+          obj = {
+            file: file,
+            content: mutation.path.split('.').reduce((a, b) => a[b], ast)
+          };
+          acc.push(obj);
+        }
+
+        const regex = new RegExp(`\\$ ${mutation.path} = .*`);
+        if (mutation.type === 'variable') {
+          if (obj.content.match(regex)) {
+            obj.content = obj.content.replace(regex, `$ ${mutation.path} = '${mutation.value}'`)
+          } else {
+            obj.content = `$ ${mutation.path} = '${mutation.value}'\n\n` + obj.content
+          }
+        }
+
+        return acc
+
+      }, res);
     });
   }
 
   getValue(path) {
 
-    if(!path)
+    if (!path)
       return cmacc.compile(this.ref, this.opts);
 
     const mutations = this.mutations.filter((x) => {
@@ -98,7 +121,7 @@ class editor {
 
   render(debug) {
     return this.ast.then(ast => {
-      return cmacc.render(ast)
+      return cmacc.render(ast, this.opts)
     }).then(res => {
       return cmacc.remarkable.render(res, debug)
     })

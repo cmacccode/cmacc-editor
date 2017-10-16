@@ -20,9 +20,10 @@ describe('value', function () {
     const editor = new CmaccEditor(ref);
 
     it('ast', () => {
-      return editor.getValue('world').then((value) => {
-        assert.equal(value, 'World')
-      });
+      return editor.getValue('world')
+        .then((value) => {
+          assert.equal(value, 'World')
+        });
     });
   });
 
@@ -33,16 +34,21 @@ describe('value', function () {
     const editor = new CmaccEditor(ref);
 
     it('add mutation', () => {
-      editor.addMutation('world', 'Test')
-      return editor.ast.then((ast) => {
-        assert.equal(ast.world, 'Test')
-      });
+      return editor.addMutation('world', 'Test')
+        .then(() => {
+          return editor.ast
+        })
+        .then((ast) => {
+          assert.equal(ast.world, 'Test')
+          return;
+        });
     });
 
     it('ast', () => {
-      return editor.getValue('world').then((value) => {
-        assert.equal(value, 'Test')
-      });
+      return editor.getValue('world')
+        .then((value) => {
+          assert.equal(value, 'Test')
+        });
     });
   });
 
@@ -54,9 +60,11 @@ describe('value', function () {
     const editor = new CmaccEditor(ref);
 
     it('ast', () => {
-      return editor.getValue('helloworld').then((value) => {
-        assert.equal(value, '$ world = \'World\'\n\n# hello {{world}}')
-      });
+      return editor.getValue('helloworld')
+        .then((value) => {
+          assert.equal(value, '$ world = \'World\'\n\n# hello {{world}}')
+          return;
+        });
     });
   });
 
@@ -67,14 +75,17 @@ describe('value', function () {
     const editor = new CmaccEditor(ref);
 
     it('add mutation', () => {
-      editor.addMutation('helloworld', '$ world = \'World\'\n\n# hello {{world}}')
-      return editor.ast
+      return editor.addMutation('helloworld', '$ world = \'World\'\n\n# hello {{world}}')
+        .then(() => {
+          return editor.ast
+        });
     });
 
     it('check mutation', () => {
-      return editor.getValue('helloworld').then((value) => {
-        assert.equal(value, '$ world = \'World\'\n\n# hello {{world}}')
-      });
+      return editor.getValue('helloworld')
+        .then((value) => {
+          assert.equal(value, '$ world = \'World\'\n\n# hello {{world}}')
+        });
     });
   });
 });

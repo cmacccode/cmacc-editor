@@ -19,16 +19,18 @@ describe('result', function () {
 
     const editor = new CmaccEditor(ref);
 
+
     it('mutation', () => {
-      editor.addMutation('world', 'Test')
-      return editor.getValue('world').then((value) => {
+      editor.addMutation('world', 'Test').then(() => {
+        return editor.getValue('world')
+      }).then((value) => {
         assert.equal(value, 'Test')
       });
     });
 
     it('result', () => {
-      return editor.getResult().then((value) => {
-        assert.equal(value, '$ world = \'Test\'\n\n# hello {{world}}')
+      return editor.getResult().then((res) => {
+        assert.equal(res[0].content, '$ world = \'Test\'\n\n# hello {{world}}')
       });
     });
   });
@@ -40,16 +42,19 @@ describe('result', function () {
     const editor = new CmaccEditor(ref);
 
     it('mutation', () => {
-      editor.addMutation('world2', 'Test')
-      return editor.getValue('world2').then((value) => {
+      return editor.addMutation('world2', 'Test').then(() => {
+        return editor.getValue('world2')
+      }).then((value) => {
         assert.equal(value, 'Test')
+        return;
       });
     });
 
     it('result', () => {
-      return editor.getResult().then((value) => {
-        assert.equal(value, '$ world2 = \'Test\'\n\n$ world = \'World\'\n\n# hello {{world}}')
-      });
+      return editor.getResult()
+        .then((res) => {
+          assert.equal(res[0].content, '$ world2 = \'Test\'\n\n$ world = \'World\'\n\n# hello {{world}}')
+        });
     });
   });
 
