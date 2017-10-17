@@ -56,9 +56,8 @@ class editor {
   getResult() {
     return this.getValue().then((ast) => {
 
-      const res = [];
-
       return this.mutations.reduce((acc, mutation) => {
+
         const file = mutation['file'] || ast['$file'];
 
         let obj = acc.find(x => x.file === file)
@@ -80,9 +79,13 @@ class editor {
           }
         }
 
+        if (mutation.type === 'file') {
+          obj.content = mutation.value
+        }
+
         return acc
 
-      }, res);
+      }, []);
     });
   }
 
