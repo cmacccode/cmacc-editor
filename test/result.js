@@ -45,7 +45,7 @@ describe('result', function () {
       return editor.addMutation('world2', 'Test').then(() => {
         return editor.getValue('world2')
       }).then((value) => {
-        assert.equal(value, 'Test')
+        assert.equal(value.content, 'Test')
         return;
       });
     });
@@ -53,7 +53,7 @@ describe('result', function () {
     it('result', () => {
       return editor.getResult()
         .then((res) => {
-          assert.equal(res[0].content, '$ world2 = \'Test\'\n\n$ world = \'World\'\n\n# hello {{world}}')
+          assert.equal(res[0].content, '$ world = \'World\'\n\n$ world2 = \'Test\'\n\n# hello {{world}}')
         });
     });
   });

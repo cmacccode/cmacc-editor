@@ -47,7 +47,7 @@ describe('value', function () {
     it('ast', () => {
       return editor.getValue('world')
         .then((value) => {
-          assert.equal(value, 'Test')
+          assert.equal(value.content, 'Test')
         });
     });
   });
@@ -82,10 +82,16 @@ describe('value', function () {
         });
     });
 
+    it('add mutation', () => {
+      assert.equal(editor.mutations[0].path, 'helloworld')
+      assert.equal(editor.mutations[0].value, '$ world = \'World\'\n\n# hello {{world}}')
+    });
+
     it('check mutation', () => {
       return editor.getValue('helloworld')
         .then((value) => {
-          assert.equal(value, '$ world = \'World\'\n\n# hello {{world}}')
+          assert.equal(value.header[0], '$ world = \'World\'')
+          assert.equal(value.content[0], '# hello {{world}}')
         });
     });
   });
