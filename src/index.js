@@ -78,7 +78,7 @@ class editor {
             obj.content = obj.content.replace(regex, `$ ${mutation.path} = '${mutation.value}'`)
           } else {
             const split = splitContent(obj.content)
-            obj.content = `${split.header.join('\n\n')}$ ${mutation.path} = '${mutation.value}'\n\n${split.content.join('\n')}`
+            obj.content = `${split.header.join('\n')}$ ${mutation.path} = '${mutation.value}'\n\n${split.content.join('\n')}`
           }
         }
 
