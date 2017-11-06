@@ -1,0 +1,18 @@
+// This is the part of the process where we start shaping the prose object into something closer to the deal. In this example a Mutual NDA
+
+// Parameters
+// -----------
+
+$ doc_Title = "Mutual NDA"
+
+$ notice_Period_TimeSpan = "thirty (30) days"
+
+// Document sections
+
+$ intro = {}
+$ intro.doc_Title = doc_Title
+
+$ conf_Xnum = "1"
+
+$ confid = {}
+$ confid.xnum = conf_Xnum
